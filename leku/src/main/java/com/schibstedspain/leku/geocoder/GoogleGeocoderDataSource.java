@@ -1,12 +1,18 @@
 package com.schibstedspain.leku.geocoder;
 
 import android.location.Address;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.schibstedspain.leku.geocoder.api.AddressBuilder;
 import com.schibstedspain.leku.geocoder.api.NetworkClient;
+
+import org.json.JSONException;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Locale;
-import org.json.JSONException;
+
 import rx.Observable;
 
 public class GoogleGeocoderDataSource implements GeocoderInteractorDataSource {
@@ -35,13 +41,16 @@ public class GoogleGeocoderDataSource implements GeocoderInteractorDataSource {
         subscriber.onCompleted();
         return;
       }
+
       try {
         String result = networkClient.requestFromLocationName(String.format(Locale.ENGLISH,
-            QUERY_REQUEST, query.trim(), apiKey));
+            QUERY_REQUEST, URLEncoder.encode(query.trim(), "utf-8"), apiKey));
         List<Address> addresses = addressBuilder.parseResult(result);
         subscriber.onNext(addresses);
         subscriber.onCompleted();
       } catch (JSONException e) {
+        subscriber.onError(e);
+      } catch (UnsupportedEncodingException e) {
         subscriber.onError(e);
       }
     });

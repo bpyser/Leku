@@ -1,12 +1,14 @@
 package com.schibstedspain.leku.geocoder.api;
 
 import android.location.Address;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class AddressBuilder {
 
@@ -24,6 +26,8 @@ public class AddressBuilder {
     JSONObject location = jsonObject.getJSONObject("geometry").getJSONObject("location");
     double latitude = location.getDouble("lat");
     double longitude = location.getDouble("lng");
+
+    String formattedAddress = jsonObject.getString("formatted_address");
 
     List<AddressComponent> components = getAddressComponents(jsonObject.getJSONArray("address_components"));
 
@@ -51,6 +55,11 @@ public class AddressBuilder {
     if (!street.isEmpty() && !number.isEmpty()) {
       fullAddress.append(", ").append(number);
     }
+
+    if (fullAddress.length() == 0) {
+      fullAddress.append(formattedAddress);
+    }
+
     Address address = new Address(Locale.getDefault());
     address.setLatitude(latitude);
     address.setLongitude(longitude);

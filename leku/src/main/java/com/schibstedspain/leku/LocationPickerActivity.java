@@ -30,6 +30,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -44,20 +45,22 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.schibstedspain.leku.geocoder.GoogleGeocoderDataSource;
 import com.schibstedspain.leku.geocoder.AndroidGeocoderDataSource;
 import com.schibstedspain.leku.geocoder.GeocoderPresenter;
 import com.schibstedspain.leku.geocoder.GeocoderRepository;
 import com.schibstedspain.leku.geocoder.GeocoderViewInterface;
+import com.schibstedspain.leku.geocoder.GoogleGeocoderDataSource;
 import com.schibstedspain.leku.geocoder.api.AddressBuilder;
 import com.schibstedspain.leku.geocoder.api.NetworkClient;
 import com.schibstedspain.leku.permissions.PermissionUtils;
 import com.schibstedspain.leku.tracker.TrackEvents;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
@@ -155,7 +158,7 @@ public class LocationPickerActivity extends AppCompatActivity
   }
 
   protected void track(TrackEvents event) {
-    LocationPicker.getTracker().onEventTracked(event);
+//    LocationPicker.getTracker().onEventTracked(event);
   }
 
   private void setUpMainVariables() {
@@ -532,7 +535,7 @@ public class LocationPickerActivity extends AppCompatActivity
   public void didLoadLocation() {
     progressBar.setVisibility(View.GONE);
 
-    changeListResultVisibility(locationList.size() > 1 ? View.VISIBLE : View.GONE);
+    changeListResultVisibility(locationList.size() > 0 ? View.VISIBLE : View.GONE);
 
     if (locationList.size() == 1 && locationList.get(0) != null) {
       changeLocationInfoLayoutVisibility(View.VISIBLE);
@@ -926,12 +929,12 @@ public class LocationPickerActivity extends AppCompatActivity
   }
 
   private void updateLocationNameList(List<Address> addresses) {
-    locationNameList.clear();
+    adapter.clear();
     for (Address address : addresses) {
       if (address.getFeatureName() == null) {
-        locationNameList.add(getString(R.string.unknown_location));
+        adapter.add(address.getAddressLine(0));
       } else {
-        locationNameList.add(getFullAddressString(address));
+        adapter.add(getFullAddressString(address));
       }
     }
   }
